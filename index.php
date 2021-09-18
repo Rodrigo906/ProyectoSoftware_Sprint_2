@@ -12,11 +12,28 @@
 
     <script type="text/javascript" src="javaScript/funciones_index.js"> </script>
 </head>
-<body>
+<body onload="eliminarNotificacion()">
 
     <?php require('mysql.php')?>
     <?php require('rol.php')?>
     <?php require('user.php')?>
+    <?php require('MyException.php')?>
+
+
+<script type="text/javascript">
+    
+    function temporizador(){
+        let notificacion = document.getElementById("notificacion");   
+        if (notificacion != null){
+            let padre = notificacion.parentNode;
+            padre.removeChild(notificacion);
+        }
+    }
+    function eliminarNotificacion(){
+        setTimeout(temporizador, 9000);
+    }
+
+</script>
 
 
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -35,6 +52,17 @@
         </div>
     </nav>
      
+     <!-- Recibe el mensaje de error o exito desde eliminar.php o Alta_modificacion.php
+        y lo muestra por pantalla
+     -->
+      <?php     
+            if (isset($_GET["mensajeEx"])){
+
+                $mensaje = $_GET["mensajeEx"]; 
+                echo $mensaje;
+            }
+      ?>
+    
    <div class="barra_operaciones">
     
        <button class="boton_agregar btn" data-bs-toggle="modal" data-bs-target="#Modal"> 
@@ -60,8 +88,18 @@
             </thead>
             <tbody>
             <?php  
+                try{
+
                 $mysql = new mysql();
                 $resultado = $mysql->findAllUser();
+
+               }catch(MyException $e){
+                    echo $e->errorMessage();
+                    exit();
+                }catch(Exception $ex){
+                     echo $ex->getMessage();
+                     exit();
+                }    
                 foreach ($resultado as $usuarios) {
             ?>
              <tr class="align-middle">
